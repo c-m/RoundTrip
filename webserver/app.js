@@ -30,10 +30,10 @@ function saveUserLogin(user_login, user_info, cb) {
 function saveUserTags(user_id, places_tags, cb) {
   tag_types = places_tags.types
   tag_subtypes = places_tags.subtypes
-  Object.keys(tag_types).foreach((type) => {
+  Object.keys(tag_types).forEach((type) => {
     redis_client.hset('user:' + user_id + ':types', type, tag_types[type])
   });
-  Object.keys(tag_subtypes).foreach((subtype) => {
+  Object.keys(tag_subtypes).forEach((subtype) => {
     redis_client.hset('user:' + user_id + ':subtypes', subtype, tag_subtypes[subtype])
   });
   cb();
@@ -59,7 +59,6 @@ app.post('/login', function (req, res) {
         if (user_set) {
           user_profile = {"user_info":user_info, "user_login":user_login}
           fb.getUserCheckins(user_profile, function(err, user_checkins) {
-            console.log(user_checkins)
             google_places.getPlacesTags(user_checkins, function(err, places_tags) {
               saveUserTags(user_info.id, places_tags, function(err) {
                 res.end()
