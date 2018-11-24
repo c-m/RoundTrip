@@ -2,5 +2,9 @@
 	"placeDetails" : {
 		"radius" : 10,
 		"nameThreshold" : 0.3
+	},
+	"nearby" : {
+		"radius" : 5000,
+		"maxno" : 30
 	}
 }
