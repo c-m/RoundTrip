@@ -2,34 +2,34 @@ var mlSubcategories = require('../ml-subcategories-generator');
 
 exports.getSubtypes = function(place, callback) {
 
-	var reviews = (place.result || { reviews: [] }).reviews || [];
+    var reviews = (place.result || { reviews: [] }).reviews || [];
     var length = reviews.length;
     var processed = 0;
     var subtypes = new Set();
 
-	place.result.reviews.forEach((review) => {
+    place.result.reviews.forEach((review) => {
 
-		mlSubcategories.getSubcategories(review.text, (err, res) => {
+        mlSubcategories.getSubcategories(review.text, (err, res) => {
 
-			if (err) {
-				console.log(err);
-			} else {
+            if (err) {
+                console.log(err);
+            } else {
 
-				res.sort((a, b) => { 
-					return b.confidence - a.confidence;
-				}).slice(0, 3).forEach(el => {
+                res.sort((a, b) => { 
+                    return b.confidence - a.confidence;
+                }).slice(0, 3).forEach(el => {
 
-					if (el.name && !subtypes.has(el.name)) {
-						subtypes.add(el.name);
-					}
-				});
-			}
+                    if (el.name && !subtypes.has(el.name)) {
+                        subtypes.add(el.name);
+                    }
+                });
+            }
 
-			if (++processed === length) {
-				callback(null, Array.from(subtypes));
-			}
-		});
-	});
+            if (++processed === length) {
+                callback(null, Array.from(subtypes));
+            }
+        });
+    });
 };
 
 
