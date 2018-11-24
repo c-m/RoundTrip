@@ -1,0 +1,11 @@
+{
+  "name": "place-subtypes-generator",
+  "version": "1.0.0",
+  "description": "Generate subtypes for a Google Place object based on its reviews",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Adrian Branescu",
+  "license": "ISC"
+}
