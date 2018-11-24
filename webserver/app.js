@@ -39,6 +39,28 @@ function saveUserTags(user_id, places_tags, cb) {
   cb();
 }
 
+function savePlaces(place_string, places, cb) {
+  redis_client.keys(place_string+':google_places', function(err, res) {
+    if (res == null) {
+      places_ids = places.places
+      inverted_places_ids = places.place_string
+      Object.keys(places_ids).forEach((place_id) => {
+        places_ids[place_id].types.forEach((type) => {
+          redis_client.hset('place:' + place_id + ':types', type, null)
+        });
+        places_ids[place_id].subtypes.forEach((subtype) => {
+          redis_client.hset('place:' + place_id + ':subtypes', subtypes, null)
+        });
+        redis_client.hset(place_string+':google_places', place_id, JSON.stringify(places_ids[place_id].raw_json))
+      });
+      Object.keys(inverted_places_ids).forEach((type) => {
+        redis_client.hset(place_string+':places', type, JSON.stringify(inverted_places_ids[type]))
+      });
+    }
+  })
+  cb();
+}
+
 app.use(function (req, res, next) {
   res.header("Content-Type",'application/json;charset=utf-8');
   next();
@@ -46,6 +68,26 @@ app.use(function (req, res, next) {
 
 app.get('/status', function (req, res) {
   res.send({'status':'OK'})
+})
+
+app.post('/search_place', function(req, res) {
+  if (req.query.user_token == null) {
+    res.sendStatus("401");
+    res.send("Unauthorized access for /search_place endpoint!");
+  } else {
+    if (req.query.place_string == null) {
+      res.sendStatus("400");
+      res.send("Bad request! Missing place_string param.")
+    } else {
+      var place_string = req.query.place_string
+      google_places.getPlaces(place_string, function(err, places) {
+        savePlaces(place_string, places, function(err) {
+          res.end()
+        });
+      });
+    }
+    console.log('Got a PUT request at /search_place with token: ' + req.query.user_token + ' and place_string: ' + req.query.place_string)
+  }
 })
 
 app.post('/login', function (req, res) {
