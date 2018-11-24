@@ -5,7 +5,7 @@ const gclient = require('@google/maps').createClient({
 });
 const redis = require('redis');
 //const rediscli = redis.createClient(6379, "192.168.0.253");
-//const placeSubtypes = require('place-subtypes-generator');
+//const placeSubtypes = require('../place-subtypes-generator');
 
 const config = require('./config.json');
 console.log(config);
