@@ -10,7 +10,7 @@ gplaces.getPlaceTags({
 });
 */
 
-
+/*
 gplaces.getPlacesTags([
 		{
 			lat: "45.109136160115",
@@ -21,6 +21,10 @@ gplaces.getPlacesTags([
 	], function(err, ret) {
 	console.log(err, ret);
 });
+*/
 
+gplaces.getPlaces("Berlin", function(err, ret) {
+	
+});
 
 console.log("Test");
