@@ -1,0 +1,6 @@
+{
+	"placeDetails" : {
+		"radius" : 10,
+		"nameThreshold" : 0.8
+	}
+}
