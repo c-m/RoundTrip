@@ -8,7 +8,27 @@ const redis = require('redis');
 //const placeSubtypes = require('../place-subtypes-generator');
 
 const config = require('./config.json');
-console.log(config);
+
+function findLocation(name, cb) {
+	return cb(null, locationMock);
+	gclient.findPlace({
+		input: name,
+		inputtype: 'textquery',
+		fields: [ 'name', 'geometry']
+	}, function(err, ret) {
+		if (err) {
+			throw new Error("Err at gmaps/findplace; name:", name, err);
+		}
+		cb(null, ret.json.candidates[0].geometry.location);
+	});
+}
+
+function getNearbyPlaces(location, cb) {
+	gclient.placesNearby({
+		location: location,
+		radius: 50000
+	}, function);
+}
 
 function getPlaceDetails(place, cb) {
 	// todo !!!!!!!! let the call
@@ -50,7 +70,7 @@ function processPlace(place, cb) {
 	var stypes = ["s1", "s2"];
 	getPlaceDetails(place, function (err, details) {
 		ret.types = Array.from(details.types);
-		//getSubtypes(details, function(err, stypes) {
+		//getSubtypes(details, function(err, stypes) { todo only first 5 reviews
 			ret.subtypes = stypes;
 			cb(null, ret);
 		//});
@@ -118,6 +138,16 @@ exports.getPlacesTags = function (places, cb) {
 	}
 }
 
+exports.getPlaces = function(townName, cb) {
+	if (false ) {
+		console.log("Town", townName, "already in cache!");
+		return cb(null, {});
+	}
+	findLocation(townName, function(err, location) {
+		
+	});
+}
+
 var detailsMock = { html_attributions: [],
   result: 
    { address_components: [ [Object], [Object], [Object], [Object], [Object], [Object] ],
@@ -155,3 +185,7 @@ var detailsMock = { html_attributions: [],
      vicinity: 'Calea lui Traian 140, Râmnicu Vâlcea' },
   status: 'OK'
 }
+
+var locationMock = { lat: 52.52000659999999, lng: 13.404954 };
+
+var townMock = {};
