@@ -1,0 +1,11 @@
+{
+  "name": "ml-subcategories-generator",
+  "version": "1.0.0",
+  "description": "Generate Google Content Categories for a given revies",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alexandra Bodirlau",
+  "license": "ISC"
+}
