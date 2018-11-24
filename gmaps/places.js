@@ -55,7 +55,7 @@ function getPlaceID(place, cb) {
 		/* select the place with the given name */
 		var rarray = ret.json.results;
 		for (var i = 0; i < rarray.length; i++) {
-			// console.log("Cmp", rarray[i].name, place.name, ":", ssim.compareTwoStrings(rarray[i].name, place.name));
+			//console.log("Cmp", rarray[i].name, place.name, ":", ssim.compareTwoStrings(rarray[i].name, place.name));
 			if (ssim.compareTwoStrings(rarray[i].name, place.name) > config.placeDetails.nameThreshold) {
 				return cb(null, rarray[i].place_id);
 			}

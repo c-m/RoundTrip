@@ -2,11 +2,11 @@ var express = require('express')
 var redis = require('redis')
 var app = express()
 var fb = require("./fb.js")
-var google_places = require("./lib/gmaps/places.js")
+var google_places = require("../gmaps/places.js")
 const port = 8000
 
-client = redis.createClient();
-client.on('error', function (err) {
+redis_client = redis.createClient();
+redis_client.on('error', function (err) {
   console.log('Error ' + err)
 })
 
@@ -17,10 +17,9 @@ function initRedisUsers() {
 }
 
 function saveUserLogin(user_login, user_info, cb) {
-  client.hget('users', user_info.id, function(err, res) {
+  redis_client.hget('users', user_info.id, function(err, res) {
     if (res == null) {
-      console.log('res is null')
-      client.hset('users', user_info.id, JSON.stringify({'name':user_info.name, 'email':user_info.email, 'access_token':user_login.user_token}))
+      redis_client.hset('users', user_info.id, JSON.stringify({'name':user_info.name, 'email':user_info.email, 'access_token':user_login.user_token}))
       cb(null, true);
     } else {
       cb(null, false);
@@ -29,15 +28,15 @@ function saveUserLogin(user_login, user_info, cb) {
 }
 
 function saveUserTags(user_id, places_tags, cb) {
-    tag_types = places_tags.types
-    tag_subtypes = places_tags.subtypes
-    Object.keys(tag_types.foreach((type) => {
-      client.hset('user:' + user_id + ':types', type, tag_types[type])
-    };
-    Object.keys(tag_subtypes.foreach((subtype) => {
-      client.hset('user:' + user_id + ':subtypes', subtype, tag_subtypes[subtype])
-    };
-    cb();
+  tag_types = places_tags.types
+  tag_subtypes = places_tags.subtypes
+  Object.keys(tag_types).forEach((type) => {
+    redis_client.hset('user:' + user_id + ':types', type, tag_types[type])
+  });
+  Object.keys(tag_subtypes).forEach((subtype) => {
+    redis_client.hset('user:' + user_id + ':subtypes', subtype, tag_subtypes[subtype])
+  });
+  cb();
 }
 
 app.use(function (req, res, next) {
@@ -60,7 +59,6 @@ app.post('/login', function (req, res) {
         if (user_set) {
           user_profile = {"user_info":user_info, "user_login":user_login}
           fb.getUserCheckins(user_profile, function(err, user_checkins) {
-            console.log(user_checkins)
             google_places.getPlacesTags(user_checkins, function(err, places_tags) {
               saveUserTags(user_info.id, places_tags, function(err) {
                 res.end()
