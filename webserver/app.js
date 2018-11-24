@@ -1,6 +1,8 @@
 var express = require('express')
 var redis = require('redis')
 var app = express()
+var fb = require("./fb.js")
+var google_places = require("./lib/gmaps/places.js")
 const port = 8000
 
 client = redis.createClient();
@@ -8,8 +10,34 @@ client.on('error', function (err) {
   console.log('Error ' + err)
 })
 
-function saveUserLogin(user) {
-  client.set("name", user.user_token)
+function initRedisUsers() {
+  client.get("users", function(err, response) {
+    if (response == null) {}
+  });
+}
+
+function saveUserLogin(user_login, user_info, cb) {
+  client.hget('users', user_info.id, function(err, res) {
+    if (res == null) {
+      console.log('res is null')
+      client.hset('users', user_info.id, JSON.stringify({'name':user_info.name, 'email':user_info.email, 'access_token':user_login.user_token}))
+      cb(null, true);
+    } else {
+      cb(null, false);
+    }
+  });
+}
+
+function saveUserTags(user_id, places_tags, cb) {
+    tag_types = places_tags.types
+    tag_subtypes = places_tags.subtypes
+    Object.keys(tag_types.foreach((type) => {
+      client.hset('user:' + user_id + ':types', type, tag_types[type])
+    };
+    Object.keys(tag_subtypes.foreach((subtype) => {
+      client.hset('user:' + user_id + ':subtypes', subtype, tag_subtypes[subtype])
+    };
+    cb();
 }
 
 app.use(function (req, res, next) {
@@ -23,12 +51,27 @@ app.get('/status', function (req, res) {
 
 app.post('/login', function (req, res) {
   if (req.query.user_token == null) {
-  	res.sendStatus("401");
+    res.sendStatus("401");
     res.send("Invalid login details!");
   } else {
     var user_login = {'user_token':req.query.user_token}
-    saveUserLogin(user_login)
-    res.end()
+    fb.getUserProfile(user_login, function(err, user_info) {
+      saveUserLogin(user_login, user_info, function(err, user_set) {
+        if (user_set) {
+          user_profile = {"user_info":user_info, "user_login":user_login}
+          fb.getUserCheckins(user_profile, function(err, user_checkins) {
+            console.log(user_checkins)
+            google_places.getPlacesTags(user_checkins, function(err, places_tags) {
+              saveUserTags(user_info.id, places_tags, function(err) {
+                res.end()
+              });
+            });
+          });
+        } else {
+            res.end()
+        }
+      });
+    });
     console.log('Got a PUT request at /login with token: ' + req.query.user_token)
   }
 })
@@ -43,4 +86,7 @@ app.delete('/user', function (req, res) {
   res.end()
 })
 
-app.listen(port, () => console.log(`Webserver app listening on port ${port}!`))
+app.listen(port, function() {
+    //initRedisUsers()
+    console.log(`Webserver app listening on port ${port}!`)
+});
