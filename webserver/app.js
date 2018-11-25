@@ -149,18 +149,18 @@ app.get('/search_place', function(req, res) {
 })
 
 app.get('/top_subcategories', function (req, res) {
-  if (req.query.user_token == null) {
+  if (req.query.user_id == null) {
     res.sendStatus("401");
     res.send("Unauthorized access for /top_subcategories endpoint!");
 
   } else {
-    top_subcategories.get_categories(redis_client, req.query.user_token,
+    top_subcategories.get_categories(redis_client, req.query.user_id,
       function(err, results) {
         if (err) {
           console.log(err);
           res.send(err);
         } else {
-          res.send(results);
+          res.json(results);
         }
     });
   }
@@ -177,9 +177,10 @@ app.post('/update_subcat_score', function(req, res) {
       res.send("Bad request! Missing subtypes param.");
 
     } else {
-      var counter = req.query.subtypes.length;
+      subtypes = JSON.parse(req.query.subtypes)
+      var counter = subtypes.length;
 
-      req.query.subtypes.forEach( function (subtype) {
+      subtypes.forEach( function (subtype) {
         console.log("Update subcategory:", subtype);
 
         redis_client.hget('user:' + req.query.user_id + ':subtypes', subtype,
