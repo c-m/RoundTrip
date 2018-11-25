@@ -12,7 +12,7 @@ module.exports = {
 
 
 function get_subcategories(text, callback) {
-  console.log("Predicting categories...");
+  //console.log("Predicting categories...");
   
   const document = {
     content: text,
@@ -23,7 +23,7 @@ function get_subcategories(text, callback) {
   .classifyText({document: document})
   .then(results => {
     var classification = results[0];
-    
+
     process_categories(classification.categories, callback);
   })
   .catch(err => {
@@ -35,6 +35,11 @@ function process_categories(categories, callback) {
   var map = new Map();
   var subcat;
   var counter = categories.length;
+
+  if (!categories || categories.length == 0) {
+    callback(null, []);
+    return;
+  }
 
   categories.forEach(raw_subcat => {
     subcat = CONSTANTS.raw_subcategories[raw_subcat.name];
@@ -56,6 +61,7 @@ function process_categories(categories, callback) {
         return {name: el[0], confidence: el[1]}
       });
 
+    
     callback(null, result);       
     }
   });

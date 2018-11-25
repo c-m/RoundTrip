@@ -60,6 +60,7 @@
 	],
 
 	"raw_subcategories": {
+		"/Arts & Entertainment": ["art"],
 		"/Arts & Entertainment/Events & Listings/Concerts & Music Festivals": ["concert"],
 		"/Arts & Entertainment/Events & Listings/Bars, Clubs & Nightlife": ["drink", "dance"],
 		"/Arts & Entertainment/Events & Listings": ["art"],
@@ -118,6 +119,7 @@
 		"/People & Society/Kids & Teens": ["social", "family"],
 		"/People & Society/Kids & Teens/Children’s Interests": ["social"],
 		"/People & Society/Kids & Teens/Teen Interests": ["social"],
+		"/Sports/Team Sports": ["zoo"],
 		"/Travel/Tourist Destinations": ["tourist"],
 		"/Travel/Tourist Destinations/Beaches & Islands": ["beach"],
 		"/Travel/Tourist Destinations/Mountain & Ski Resorts": ["mountain", "ski"],
