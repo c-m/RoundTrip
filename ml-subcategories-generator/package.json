@@ -7,5 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Alexandra Bodirlau",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/language": "^2.0.0"
+  }
 }

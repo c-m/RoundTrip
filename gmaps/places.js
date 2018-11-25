@@ -17,7 +17,7 @@ function getPlaceDetails(place, cb) {
 		if (err) {
 			throw new Error("Err at gmaps/place; placeid:", place.placeid, err);
 		}
-    console.log(ret.json.result);
+    //console.log(ret.json.result);
 		cb(null, ret.json.result);
 	});
 }
@@ -48,7 +48,7 @@ function processPlace(place, cb) {
 	var ret = {};
 	getPlaceDetails(place, function (err, details) {
 		ret.types = Array.from(details.types);
-		get_subtypes.getSubtypes({ result: details }, function(err, stypes) {
+		place_subtypes.getSubtypes({ result: details }, function(err, stypes) {
 			ret.subtypes = stypes;
 			cb(null, ret);
 		});
@@ -158,7 +158,6 @@ function printRes(res) {
 }
 
 function loopNearby(result, location, pagetoken, category, cb) {
-  console.log("in looop", location, pagetoken, category);
 	/* ugly to pass validation */
 	var obj = pagetoken ?
 		{
@@ -187,7 +186,7 @@ function loopNearby(result, location, pagetoken, category, cb) {
 }
 
 function getNearbyPlaces(location, cb) {
-	return cb(null, townMock);
+	//return cb(null, smallTownMock);
 	var result = [];
 	var done = constants.categories.length;
 
@@ -205,32 +204,43 @@ function getNearbyPlaces(location, cb) {
 }
 
 function packPlaces(townName, raw_places, cb) {
-  var done = 2; //!!!!!!!!!!!!!1 CHANGEEE
+  var done = 50; //raw_places.length;
   var tkey = townName + ":places";
   var result = {
     places: {}
   };
   result[tkey] = {};
 
-  for (var i = 0; i < 2; i++) {
+  if (raw_places.length == 0) {
+  	cb(null, result);
+  	return;
+  }
+
+  var i = 0;
+  var interval = setInterval(function() {
+    var place = raw_places[i];
+    i++;
     for (var j = 0; j < place.types.length; j++) {
       var type = place.types[j];
       if (result[tkey][type] === undefined)
         result[tkey][type] = [];
       result[tkey][type].push(place.place_id);
     }
-    var place = raw_places[i];
+
     processPlace({ placeid: place.place_id }, function(err, ret) {
       result.places[place.place_id] = {
         raw_json: JSON.stringify(place),
         types: place.types,
         subtypes: ret.subtypes
       }
+
+      console.log('Done', done);
       if (--done <= 0) {
         cb(null, result);
+        clearInterval(interval);
       }
     });
-  }
+  }, 500);
 }
 
 exports.getPlaces = function(townName, cb) {
@@ -286,6 +296,24 @@ var detailsMock = { html_attributions: [],
 }
 
 var locationMock = { lat: 52.52000659999999, lng: 13.404954 };
+
+var smallTownMock = [
+  { geometry: { location: [Object], viewport: [Object] },
+    icon: 'https://maps.gstatic.com/mapfiles/place_api/icons/generic_recreational-71.png',
+    id: 'b27f64997bef16b5fdc073f5bd288d77bc7331fb',
+    name: 'Vacaresti Park Nature Reserve',
+    opening_hours: { open_now: true },
+    photos: [ [Object] ],
+    place_id: 'ChIJl5BE92D-sUARPDc9IShsBOQ',
+    plus_code: 
+     { compound_code: '94XM+Q7 Bucharest, Romania',
+       global_code: '8GP894XM+Q7' },
+    rating: 4.3,
+    reference: 'ChIJl5BE92D-sUARPDc9IShsBOQ',
+    scope: 'GOOGLE',
+    types: [ 'zoo', 'park', 'point_of_interest', 'establishment' ],
+    vicinity: 'Bucharest' }
+    ];
 
 var townMock = 
  [ { geometry: { location: [Object], viewport: [Object] },

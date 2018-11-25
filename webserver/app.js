@@ -55,7 +55,7 @@ function savePlaces(user_id, place_string, places, cb) {
           redis_client.hset('place:' + place_id + ':types', type, "")
         });
         places_ids[place_id].subtypes.forEach((subtype) => {
-          redis_client.hset('place:' + place_id + ':subtypes', subtypes, "")
+          redis_client.hset('place:' + place_id + ':subtypes', subtype, "")
         });
         redis_client.hset(place_string+':google_places', place_id, JSON.stringify(places_ids[place_id].raw_json))
       });
@@ -92,6 +92,23 @@ app.get('/recent_searches', function (req,res) {
   }
 });
 
+function hmget(key, mkeys, cb) {
+  var done = mkeys.length;
+  var result = [];
+  for (var i = 0; i < mkeys.length; i++) {
+    redis_client.hget(key, mkeys[i], function(err, ret) {
+      if (err) {
+        console.log(err);
+        return cb(err);
+      }
+      result.push(JSON.parse(ret));
+      if (--done == 0) {
+        cb(null, result);
+      }
+    });
+  }
+}
+
 app.get('/search_place', function(req, res) {
   if (req.query.user_id == null) {
     res.sendStatus("401");
@@ -103,7 +120,6 @@ app.get('/search_place', function(req, res) {
     } else {
       var place_string = req.query.place_string
       google_places.getPlaces(place_string, function(err, places) {
-        console.log(places)
         savePlaces(req.query.user_id, place_string, places, function(err) {
           correlation_gen.getCorrelation(req.query.user_id, place_string, 5, 10, redis_client, function(err, result) {
             if (err) {
@@ -111,10 +127,19 @@ app.get('/search_place', function(req, res) {
               res.send(err)
             } else {
               console.log(result)
+
+              hmget(place_string+":google_places", result, function(err, ret) {
+                if (err) {
+                  console.log(err)
+                  res.send(err)
+                } else {
+                  res.json(ret);
+                  console.log(ret);
+                }
+              });
               //res.json(result)
             }
           });
-          res.end()
         });
       });
     }
