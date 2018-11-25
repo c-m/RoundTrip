@@ -4,7 +4,7 @@ const gclient = require('@google/maps').createClient({
   key: 'AIzaSyBUzjhA-C9VNcwZ15rrVkc5M_Am2leLQP4'
 });
 const redis = require('redis');
-//const rediscli = redis.createClient(6379, "192.168.0.253");
+const redis_client = redis.createClient();
 //const placeSubtypes = require('../place-subtypes-generator');
 
 const config = require('./config.json');
@@ -213,7 +213,7 @@ function packPlaces(townName, raw_places, cb) {
   };
   result[tkey] = {};
 
-  for (var i = 0; i < raw_places.length; i++) {
+  for (var i = 0; i < 2; i++) {
     var place = raw_places[i];
     result.places[place.place_id] = {
       raw_json: JSON.stringify(place),
@@ -231,13 +231,15 @@ function packPlaces(townName, raw_places, cb) {
 }
 
 exports.getPlaces = function(townName, cb) {
-	if (false) {
-		console.log("Town", townName, "already in cache!");
-		return cb(null, {});
-	}
-	findLocation(townName, function(err, location) {
-		getNearbyPlaces(location, function(err, places) {
-			packPlaces(townName, places, cb);
+	redis_client.keys(townName+':google_places', function (err, res) {
+		if (res.length != 0) {
+			console.log("Town", townName, "already in cache!");
+			return cb(null, {});
+		}
+		findLocation(townName, function(err, location) {
+			getNearbyPlaces(location, function(err, places) {
+				packPlaces(townName, places, cb);
+			});
 		});
 	});
 }

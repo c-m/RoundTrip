@@ -3,6 +3,7 @@ var redis = require('redis')
 var app = express()
 var fb = require("./fb.js")
 var google_places = require("../gmaps/places.js")
+var correlation_gen = require("../correlation-generator/index.js")
 const port = 8000
 
 redis_client = redis.createClient();
@@ -41,15 +42,15 @@ function saveUserTags(user_id, places_tags, cb) {
 
 function savePlaces(place_string, places, cb) {
   redis_client.keys(place_string+':google_places', function(err, res) {
-    if (res == null) {
+    if (res.length == 0) {
       places_ids = places.places
-      inverted_places_ids = places.place_string
+      inverted_places_ids = places[place_string+':places']
       Object.keys(places_ids).forEach((place_id) => {
         places_ids[place_id].types.forEach((type) => {
-          redis_client.hset('place:' + place_id + ':types', type, null)
+          redis_client.hset('place:' + place_id + ':types', type, "")
         });
         places_ids[place_id].subtypes.forEach((subtype) => {
-          redis_client.hset('place:' + place_id + ':subtypes', subtypes, null)
+          redis_client.hset('place:' + place_id + ':subtypes', subtypes, "")
         });
         redis_client.hset(place_string+':google_places', place_id, JSON.stringify(places_ids[place_id].raw_json))
       });
@@ -70,8 +71,8 @@ app.get('/status', function (req, res) {
   res.send({'status':'OK'})
 })
 
-app.post('/search_place', function(req, res) {
-  if (req.query.user_token == null) {
+app.get('/search_place', function(req, res) {
+  if (req.query.user_id == null) {
     res.sendStatus("401");
     res.send("Unauthorized access for /search_place endpoint!");
   } else {
@@ -81,12 +82,22 @@ app.post('/search_place', function(req, res) {
     } else {
       var place_string = req.query.place_string
       google_places.getPlaces(place_string, function(err, places) {
+        console.log(places)
         savePlaces(place_string, places, function(err) {
+          correlation_gen.getCorrelation(req.query.user_id, place_string, 5, 10, redis_client, function(err, result) {
+            if (err) {
+              console.log(err)
+              res.send(err)
+            } else {
+              console.log(result)
+              //res.json(result)
+            }
+          });
           res.end()
         });
       });
     }
-    console.log('Got a PUT request at /search_place with token: ' + req.query.user_token + ' and place_string: ' + req.query.place_string)
+    console.log('Got a GET request at /search_place with token: ' + req.query.user_token + ' and place_string: ' + req.query.place_string)
   }
 })
 
