@@ -7,27 +7,32 @@ module.exports = {
 }
 
 function get_categories(client, token, callback) {
-  var result;
+
+  var result = null;
 
   client.hgetall('user:' + token + ':subtypes', (err, subtypes) => {
+
     if (err) {
       callback(err);
+      return;
     }
 
     if (Object.keys(subtypes).length < TOP_N) {
+
       result = Object.keys(subtypes);
       candidates = CONSTANTS.subcategories;
 
       shuffle(candidates);
 
       candidates.forEach(elem => {
+
         if (!result.includes(elem) && result.length < TOP_N) {
           result.push(elem);
         }
       });
 
     } else { 
-      result = sort(subtypes).slice(0,TOP_N)
+      result = sort(subtypes).slice(0, TOP_N)
     }
 
     callback(null, result);
@@ -35,5 +40,7 @@ function get_categories(client, token, callback) {
 }
 
 function sort(obj) {
-  return Object.keys(obj).sort(function(a,b){return obj[b]-obj[a]})
+  return Object.keys(obj).sort(function(a, b) { 
+    return parseFloat(obj[b]) - parseFloat(obj[a]); 
+  });
 }

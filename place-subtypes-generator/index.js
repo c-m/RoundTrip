@@ -3,6 +3,7 @@ var mlSubcategories = require('../ml-subcategories-generator');
 exports.getSubtypes = function(place, callback) {
 
     var reviews = (place.result || { reviews: [] }).reviews || [];
+    reviews = reviews.slice(0, 5);
     var length = reviews.length;
     var processed = 0;
     var subtypes = new Set();

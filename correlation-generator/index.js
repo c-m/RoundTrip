@@ -22,7 +22,7 @@ exports.getCorrelation = function(userToken, town, typesCount, perTypeCount, red
 
         var typesProcessed = 0;
         var types = Object.keys(res);
-        types = types.sort((key1, key2) => parseInt(res[key2], 10) - parseInt(res[key1], 10)).slice(0, typesCount);
+        types = types.sort((key1, key2) => parseFloat(res[key2]) - parseFloat(res[key1])).slice(0, typesCount);
 
         types.forEach(type => {
 
@@ -89,11 +89,11 @@ exports.getCorrelation = function(userToken, town, typesCount, perTypeCount, red
 
                                 redisClient.hget(`user:${userToken}:subtypes`, subtype, (err, res) => {
 
-                                    var frequency = 0;
+                                    var score = 0;
                                     if (res) {
-                                        frequency = parseInt(res, 10);
+                                        score = parseFloat(res);
                                     }
-                                    place.score += frequency;
+                                    place.score += score;
                                     
                                     if (++subtypesProcessed === res.length) {
                                         
