@@ -40,7 +40,12 @@ function saveUserTags(user_id, places_tags, cb) {
   cb();
 }
 
-function savePlaces(place_string, places, cb) {
+function saveSearch(user_id, place_string) {
+
+}
+
+function savePlaces(user_id, place_string, places, cb) {
+  saveSearch(user_id, place_string)
   redis_client.keys(place_string+':google_places', function(err, res) {
     if (res.length == 0) {
       places_ids = places.places
@@ -71,6 +76,22 @@ app.get('/status', function (req, res) {
   res.send({'status':'OK'})
 })
 
+app.get('/recent_searches', function (req,res) {
+  if (req.query.user_id == null) {
+    res.sendStatus("401");
+    res.send("Unauthorized access for /search_place endpoint!");
+  } else {
+    getRecentSearches(req.query.user_id, function(err, recent_searches) {
+      if (err) {
+        console.log(err)
+        res.send(err)
+      }
+      console.log(recent_searches)
+      res.json(recent_searches)
+    });
+  }
+});
+
 app.get('/search_place', function(req, res) {
   if (req.query.user_id == null) {
     res.sendStatus("401");
@@ -83,7 +104,7 @@ app.get('/search_place', function(req, res) {
       var place_string = req.query.place_string
       google_places.getPlaces(place_string, function(err, places) {
         console.log(places)
-        savePlaces(place_string, places, function(err) {
+        savePlaces(req.query.user_id, place_string, places, function(err) {
           correlation_gen.getCorrelation(req.query.user_id, place_string, 5, 10, redis_client, function(err, result) {
             if (err) {
               console.log(err)

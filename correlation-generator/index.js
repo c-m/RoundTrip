@@ -23,7 +23,7 @@ exports.getCorrelation = function(userToken, town, typesCount, perTypeCount, red
         var typesProcessed = 0;
         var types = Object.keys(res);
         types = types.sort((key1, key2) => parseFloat(res[key2]) - parseFloat(res[key1])).slice(0, typesCount);
-
+        console.log(`RES user_types is: ${types}`);
         types.forEach(type => {
 
             redisClient.hget(`${town}:places`, type, (err, res) => {
