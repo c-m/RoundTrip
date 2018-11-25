@@ -222,8 +222,9 @@ function packPlaces(townName, raw_places, cb) {
     }
     for (var j = 0; j < place.types.length; j++) {
       var type = place.types[j];
-      if (result[tkey][type] === undefined) result[tkey][type] = 1;
-      else result[tkey][type]++;
+      if (result[tkey][type] === undefined)
+        result[tkey][type] = [];
+      result[tkey][type].push(place.place_id);
     }
   }
   cb(null, result);
