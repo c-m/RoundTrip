@@ -5,20 +5,19 @@ const gclient = require('@google/maps').createClient({
 });
 const redis = require('redis');
 const redis_client = redis.createClient();
-//const placeSubtypes = require('../place-subtypes-generator');
+const place_subtypes = require('../place-subtypes-generator');
 
 const config = require('./config.json');
 const constants = require('../ml-subcategories-generator/constants.json');
 
 function getPlaceDetails(place, cb) {
-	// todo !!!!!!!! let the call
-	return cb(null, detailsMock.result);
 	gclient.place({
 		placeid: place.placeid
 	}, function (err, ret) {
 		if (err) {
 			throw new Error("Err at gmaps/place; placeid:", place.placeid, err);
 		}
+    console.log(ret.json.result);
 		cb(null, ret.json.result);
 	});
 }
@@ -47,13 +46,12 @@ function getPlaceID(place, cb) {
 
 function processPlace(place, cb) {
 	var ret = {};
-	var stypes = ["s1", "s2"];
 	getPlaceDetails(place, function (err, details) {
 		ret.types = Array.from(details.types);
-		//getSubtypes(details, function(err, stypes) { todo only first 5 reviews
+		get_subtypes.getSubtypes({ result: details }, function(err, stypes) {
 			ret.subtypes = stypes;
 			cb(null, ret);
-		//});
+		});
 	});
 }
 
@@ -207,6 +205,7 @@ function getNearbyPlaces(location, cb) {
 }
 
 function packPlaces(townName, raw_places, cb) {
+  var done = 2; //!!!!!!!!!!!!!1 CHANGEEE
   var tkey = townName + ":places";
   var result = {
     places: {}
@@ -214,21 +213,24 @@ function packPlaces(townName, raw_places, cb) {
   result[tkey] = {};
 
   for (var i = 0; i < 2; i++) {
-    var place = raw_places[i];
-    result.places[place.place_id] = {
-      raw_json: JSON.stringify(place),
-      types: place.types,
-      subtypes: []
-    }
     for (var j = 0; j < place.types.length; j++) {
       var type = place.types[j];
       if (result[tkey][type] === undefined)
         result[tkey][type] = [];
       result[tkey][type].push(place.place_id);
     }
+    var place = raw_places[i];
+    processPlace({ placeid: place.place_id }, function(err, ret) {
+      result.places[place.place_id] = {
+        raw_json: JSON.stringify(place),
+        types: place.types,
+        subtypes: ret.subtypes
+      }
+      if (--done <= 0) {
+        cb(null, result);
+      }
+    });
   }
-  cb(null, result);
-
 }
 
 exports.getPlaces = function(townName, cb) {
