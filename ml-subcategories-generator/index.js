@@ -3,9 +3,8 @@ const CONSTANTS = require('./constants.json');
 const language = require('@google-cloud/language');
 const client = new language.LanguageServiceClient({
   projectId: 'roundtrip-1543001890834',
-  keyFilename: 'C:\\Users\\Alex\\Desktop\\2NHack\\nlp.json'
+  keyFilename: 'key.json'
 });
-
 
 module.exports = {
   get_subcategories,

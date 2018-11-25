@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "roundtrip-1543001890834",
+  "private_key_id": "ced63611317231ebba93797c5180e38ce6279b45",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDKaqavO9p4lbxB\nD8E6s9iNl7q3xYtZw3HqwehcwYaCX1l4rdAOC+FmwL/IaYp5qZEesLGFG+Bzla1M\nhsIIUmIRdJK+pTV0Nwu0BX3t6RNDSXGzMUb9NFrLWcUuglzNqsgvEuPilVutmRFb\nWuHHv3NJOfNjlsvZUfsiICjXSowt3o8xz8YHIV/2I9+oeLMh1d9o7t6pgoLZg+5d\nmPo52vQGbriY5TupjDlq39vROuZ4Jn6wLIhHu4pXHHbSzbbmv/EWippDSS2Ha8Ez\ndtjIUBeXcsgQmVdoqpsKWLk2VtLIxgjc87eOy6gfFneU1qk8Yd1ugYZdz/2MwBZS\n5Vz4ojR7AgMBAAECggEABC97O3BfZYnHqVHi74yqLxfphMT+782oN+/nqUEPLYph\nevPojt05vV8K85fvqV838vo5fzJC8QV7AwZeUeQEffdWQppaypr3o0UGX5XefYcf\niVJz0HkaGKnGQJVfx5jsui6+q5IvD2cHJtnd8wVr2tkzDuawxYgwuOejC/wIEEva\nZ8KrgKN7IeXBHXk4Np1jhTQ+kRnlBLtNlFRQsKrqKUvxmHomBzY00vVJyYIDjxGZ\nbuNC4VNLfB3Iy0vXwOgiLJTAXpxE0bpunzWp1zetUMWEOwPmhyVzgw8yRQ2aoxTh\nRbBtKU7N/Bn5b6j3WsCFE1wUsxZq3aVihzZIQ/xwcQKBgQDtVnPnf7xdAePouoE6\nhAstRmwydcM8IvbyxZQk6LtKKx9aNRAuN4b07oAqypxtx2yUkn8UIv7ll6J/RUk8\n07OYbw4R1NytiHowtxNtSy2Y5rZXi8ALQVntuMSglwonHgau4tZRfdYuS5MOLq4e\n8hO7qe1iC7JvFAK+9TYVZrGwJQKBgQDaVT7cxTmo05b+5tUz4moObUFaZI+KVR7R\nBgnSfIoo+utLNB0DQdTKtz0Pp3/9iEvtlhIo2LVCCEONBPM/6RPcRT2G/JRVMd/0\n5En2JOyHIjHcNIKlqTw0UeBhcL5YTyLr0OGmgfzJwLztfTzANbX0/fNlMWl0AyLj\nUQJx1dBgHwKBgDpuiXSaTz66w2i92ikU70eDSgoWUi3REeltWW7I2auF+F8WJ1ip\nlRFiUq22WlLwwTvG4YCMqSLPdVNONJzEJjhGRzl+paIXsrWhrSfAVYaKbqQZJPvg\naAqN7eL3rKk6zDxsXoWLrJqTQq5AMeAui0stp+L2rESKsa5f4qPcN6z9AoGBALHe\nhtL2vg2jKz1IsuKNDxfnvDk2+ZWZ2PwyrifTm/7cxHnE3+n6ZLAtbcpmDChxNGI/\nQ1YRjkFYWCf3o3AqoyptIj3pYbKyaiCpJvQniqZgnjwmb1UktU5ucZ0Qa5GoDuwM\nhPjQpy96HLBhue9hEnafuP10rtN7hp2oLpSsuxDDAoGAeqWv1rkahizUoRsXaRpe\na6FreRVOlVJiQMJ6ZMEnU+XYVZPoe7KKDG4wIZMJBtZPFz9wzgY2BRNiiMaUlIst\neTLzuOJtRMcXGQ8pcR7HTpHhACdJ4RIP6YfBM6/RFAALbqXOpalNfjtNiq8qyRPI\nb3BYtW1srTgscFMxGh03yDw=\n-----END PRIVATE KEY-----\n",
+  "client_email": "roundtripaccount@roundtrip-1543001890834.iam.gserviceaccount.com",
+  "client_id": "102795141675966796539",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/roundtripaccount%40roundtrip-1543001890834.iam.gserviceaccount.com"
+}
