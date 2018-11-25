@@ -23,7 +23,7 @@ gplaces.getPlacesTags([
 });
 */
 
-gplaces.getPlaces("Berlin", function(err, ret) {
+gplaces.getPlaces("Bucharest", function(err, ret) {
 	
 });
 
