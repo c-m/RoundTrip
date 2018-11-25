@@ -4,6 +4,7 @@ var app = express()
 var fb = require("./fb.js")
 var google_places = require("../gmaps/places.js")
 var correlation_gen = require("../correlation-generator/index.js")
+var top_subcategories = require("../top-categories")
 const port = 8000
 
 redis_client = redis.createClient();
@@ -120,6 +121,65 @@ app.get('/search_place', function(req, res) {
     }
     console.log('Got a GET request at /search_place with token: ' + req.query.user_token + ' and place_string: ' + req.query.place_string)
   }
+})
+
+app.get('/top_subcategories', function (req, res) {
+  if (req.query.user_token == null) {
+    res.sendStatus("401");
+    res.send("Unauthorized access for /top_subcategories endpoint!");
+
+  } else {
+    top_subcategories.get_categories(redis_client, req.query.user_token,
+      function(err, results) {
+        if (err) {
+          console.log(err);
+          res.send(err);
+        } else {
+          res.send(results);
+        }
+    });
+  }
+})
+
+app.post('/update_subcat_score', function(req, res) {
+  if (req.query.user_id == null) {
+    res.sendStatus("401");
+    res.send("Unauthorized access for /update_subcat_score endpoint!");
+
+  } else {
+    if (req.query.subtypes == null) {
+      res.sendStatus("400");
+      res.send("Bad request! Missing subtypes param.");
+
+    } else {
+      var counter = req.query.subtypes.length;
+
+      req.query.subtypes.forEach( function (subtype) {
+        console.log("Update subcategory:", subtype);
+
+        redis_client.hget('user:' + req.query.user_id + ':subtypes', subtype,
+          function(err, score) {
+            if (err) {
+              console.log(err);
+            }
+
+            if (score != null) {
+              score = parseInt(score);
+              score += 0.2 * score;
+
+              redis_client.hset('user:' + req.query.user_id + ':subtypes', subtype, score);
+            }
+
+            if (--counter == 0) {
+              console.log("All subcategories updated");
+              res.end();
+            }
+        });
+      });
+    }
+  }
+
+  console.log('Got a GET request at /update_subcat_score with token: ' + req.query.user_token + ' and subtypes: ' + req.query.subtypes)
 })
 
 app.post('/login', function (req, res) {
